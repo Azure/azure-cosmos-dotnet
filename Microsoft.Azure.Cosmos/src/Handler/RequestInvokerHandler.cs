@@ -23,7 +23,6 @@ namespace Microsoft.Azure.Cosmos.Handlers
         private readonly Cosmos.ConsistencyLevel? RequestedClientConsistencyLevel;
         private static readonly HttpMethod httpPatchMethod = new HttpMethod(HttpConstants.HttpMethods.Patch);
         private Cosmos.ConsistencyLevel? AccountConsistencyLevel = null;
-        private static (bool, ResponseMessage) clientIsValid = (false, null);
 
         public RequestInvokerHandler(
             CosmosClient client,
@@ -50,13 +49,18 @@ namespace Microsoft.Azure.Cosmos.Handlers
             }
 
             await this.ValidateAndSetConsistencyLevelAsync(request);
-            (bool isError, ResponseMessage errorResponse) = await this.EnsureValidClientAsync(request);
-            if (isError)
+            try
             {
-                return errorResponse;
+                await this.client.DocumentClient.EnsureValidClientAsync();
+            }
+            catch (DocumentClientException dce)
+            {
+                return dce.ToCosmosResponseMessage(request);
             }
 
+#if DEBUG
             await request.AssertPartitioningDetailsAsync(this.client, cancellationToken);
+#endif
             this.FillMultiMasterContext(request);
             return await base.SendAsync(request, cancellationToken);
         }
@@ -231,19 +235,6 @@ namespace Microsoft.Azure.Cosmos.Handlers
             else
             {
                 throw new NotImplementedException();
-            }
-        }
-
-        private async Task<(bool, ResponseMessage)> EnsureValidClientAsync(RequestMessage request)
-        {
-            try
-            {
-                await this.client.DocumentClient.EnsureValidClientAsync();
-                return RequestInvokerHandler.clientIsValid;
-            }
-            catch (DocumentClientException dce)
-            {
-                return (true, dce.ToCosmosResponseMessage(request));
             }
         }
 

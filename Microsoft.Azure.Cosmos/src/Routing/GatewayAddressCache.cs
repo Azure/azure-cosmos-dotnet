@@ -215,7 +215,7 @@ namespace Microsoft.Azure.Cosmos.Routing
                 }
 
                 int targetReplicaSetSize = this.serviceConfigReader.UserReplicationPolicy.MaxReplicaSetSize;
-                if (addresses.AllAddresses.Count() < targetReplicaSetSize)
+                if (addresses.AllAddresses.Count < targetReplicaSetSize)
                 {
                     this.suboptimalServerPartitionTimestamps.TryAdd(partitionKeyRangeIdentity, DateTime.UtcNow);
                 }
@@ -280,7 +280,7 @@ namespace Microsoft.Azure.Cosmos.Routing
             return Task.WhenAll(tasks);
         }
 
-        public async Task<PartitionAddressInformation> UpdateAsync(
+        public Task<PartitionAddressInformation> UpdateAsync(
             PartitionKeyRangeIdentity partitionKeyRangeIdentity,
             CancellationToken cancellationToken)
         {
@@ -289,7 +289,7 @@ namespace Microsoft.Azure.Cosmos.Routing
                 throw new ArgumentNullException(nameof(partitionKeyRangeIdentity));
             }
 
-            return await this.serverPartitionAddressCache.GetAsync(
+            return this.serverPartitionAddressCache.GetAsync(
                        partitionKeyRangeIdentity,
                        null,
                        () => this.GetAddressesForRangeIdAsync(
@@ -309,7 +309,7 @@ namespace Microsoft.Azure.Cosmos.Routing
 
             forceRefresh = forceRefresh ||
                 (masterAddressAndRange != null &&
-                masterAddressAndRange.Item2.AllAddresses.Count() < targetReplicaSetSize &&
+                masterAddressAndRange.Item2.AllAddresses.Count < targetReplicaSetSize &&
                 DateTime.UtcNow.Subtract(this.suboptimalMasterPartitionTimestamp) > TimeSpan.FromSeconds(this.suboptimalPartitionForceRefreshIntervalInSeconds));
 
             if (forceRefresh || request.ForceCollectionRoutingMapRefresh || this.masterPartitionAddressCache == null)
@@ -340,7 +340,7 @@ namespace Microsoft.Azure.Cosmos.Routing
                 }
             }
 
-            if (masterAddressAndRange.Item2.AllAddresses.Count() < targetReplicaSetSize && this.suboptimalMasterPartitionTimestamp.Equals(DateTime.MaxValue))
+            if (masterAddressAndRange.Item2.AllAddresses.Count < targetReplicaSetSize && this.suboptimalMasterPartitionTimestamp.Equals(DateTime.MaxValue))
             {
                 this.suboptimalMasterPartitionTimestamp = DateTime.UtcNow;
             }
@@ -434,7 +434,7 @@ namespace Microsoft.Azure.Cosmos.Routing
                 cancellationToken: default))
             {
                 using (DocumentServiceResponse documentServiceResponse =
-                        await ClientExtensions.ParseResponseAsync(httpResponseMessage))
+                        await GatewayStoreClient.ParseResponseAsync(httpResponseMessage))
                 {
                     GatewayAddressCache.LogAddressResolutionEnd(request, identifier);
                     return documentServiceResponse.GetResource<FeedResource<Address>>();
@@ -511,7 +511,7 @@ namespace Microsoft.Azure.Cosmos.Routing
                 cancellationToken: default))
             {
                 using (DocumentServiceResponse documentServiceResponse =
-                        await ClientExtensions.ParseResponseAsync(httpResponseMessage))
+                        await GatewayStoreClient.ParseResponseAsync(httpResponseMessage))
                 {
                     GatewayAddressCache.LogAddressResolutionEnd(request, identifier);
 

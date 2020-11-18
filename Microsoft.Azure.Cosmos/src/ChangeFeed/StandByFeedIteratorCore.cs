@@ -92,6 +92,8 @@ namespace Microsoft.Azure.Cosmos.ChangeFeed
 
         internal async Task<Tuple<string, ResponseMessage>> ReadNextInternalAsync(CancellationToken cancellationToken)
         {
+            bool forceRefresh = false;
+        retry:
             cancellationToken.ThrowIfCancellationRequested();
 
             if (this.compositeContinuationToken == null)
@@ -101,13 +103,15 @@ namespace Microsoft.Azure.Cosmos.ChangeFeed
                 this.compositeContinuationToken = await StandByFeedContinuationToken.CreateAsync(this.containerRid, this.continuationToken, pkRangeCache.TryGetOverlappingRangesAsync);
             }
 
-            (CompositeContinuationToken currentRangeToken, string rangeId) = await this.compositeContinuationToken.GetCurrentTokenAsync();
+            (CompositeContinuationToken currentRangeToken, string rangeId) = await this.compositeContinuationToken.GetCurrentTokenAsync(forceRefresh);
             string partitionKeyRangeId = rangeId;
             this.continuationToken = currentRangeToken.Token;
             ResponseMessage response = await this.NextResultSetDelegateAsync(this.continuationToken, partitionKeyRangeId, this.maxItemCount, this.changeFeedOptions, cancellationToken);
-            if (await this.ShouldRetryFailureAsync(response, cancellationToken))
+            if (ShouldRetryFailure(response))
             {
-                return await this.ReadNextInternalAsync(cancellationToken);
+                // Forcing stale refresh of Partition Key Ranges Cache
+                forceRefresh = true;
+                goto retry;
             }
 
             if (response.IsSuccessStatusCode
@@ -123,25 +127,10 @@ namespace Microsoft.Azure.Cosmos.ChangeFeed
         /// <summary>
         /// During Feed read, split can happen or Max Item count can go beyond the max response size
         /// </summary>
-        internal async Task<bool> ShouldRetryFailureAsync(
-            ResponseMessage response,
-            CancellationToken cancellationToken = default(CancellationToken))
+        private static bool ShouldRetryFailure(ResponseMessage response)
         {
-            if (response.IsSuccessStatusCode || response.StatusCode == HttpStatusCode.NotModified)
-            {
-                return false;
-            }
-
-            bool partitionSplit = response.StatusCode == HttpStatusCode.Gone
+            return response.StatusCode == HttpStatusCode.Gone
                 && (response.Headers.SubStatusCode == Documents.SubStatusCodes.PartitionKeyRangeGone || response.Headers.SubStatusCode == Documents.SubStatusCodes.CompletingSplit);
-            if (partitionSplit)
-            {
-                // Forcing stale refresh of Partition Key Ranges Cache
-                await this.compositeContinuationToken.GetCurrentTokenAsync(forceRefresh: true);
-                return true;
-            }
-
-            return false;
         }
 
         internal virtual Task<ResponseMessage> NextResultSetDelegateAsync(

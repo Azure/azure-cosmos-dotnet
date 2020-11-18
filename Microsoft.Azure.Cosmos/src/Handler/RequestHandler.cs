@@ -37,7 +37,7 @@ namespace Microsoft.Azure.Cosmos
         /// <param name="request"><see cref="RequestMessage"/> received by the handler.</param>
         /// <param name="cancellationToken"><see cref="CancellationToken"/> received by the handler.</param>
         /// <returns>An instance of <see cref="ResponseMessage"/>.</returns>
-        public virtual async Task<ResponseMessage> SendAsync(
+        public virtual Task<ResponseMessage> SendAsync(
             RequestMessage request,
             CancellationToken cancellationToken)
         {
@@ -46,9 +46,17 @@ namespace Microsoft.Azure.Cosmos
                 throw new ArgumentNullException(nameof(this.InnerHandler));
             }
 
-            using (request.DiagnosticsContext.CreateRequestHandlerScopeScope(this.InnerHandler))
+            IDisposable scope = request.DiagnosticsContext.CreateRequestHandlerScopeScope(this.InnerHandler);
+            try
             {
-                return await this.InnerHandler.SendAsync(request, cancellationToken);
+                Task<ResponseMessage> task = this.InnerHandler.SendAsync(request, cancellationToken);
+                _ = task.ContinueWith((_, state) => ((IDisposable)state).Dispose(), scope, default, TaskContinuationOptions.ExecuteSynchronously, TaskScheduler.Current);
+                scope = null;
+                return task;
+            }
+            finally
+            {
+                scope?.Dispose();
             }
         }
     }

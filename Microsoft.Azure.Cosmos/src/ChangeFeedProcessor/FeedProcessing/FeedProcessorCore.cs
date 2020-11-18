@@ -74,11 +74,11 @@ namespace Microsoft.Azure.Cosmos.ChangeFeed.FeedProcessing
                     }
                     while (this.resultSetIterator.HasMoreResults && !cancellationToken.IsCancellationRequested);
                 }
-                catch (TaskCanceledException canceledException)
+                catch (OperationCanceledException canceledException)
                 {
                     if (cancellationToken.IsCancellationRequested)
                     {
-                        throw;
+                        return;
                     }
 
                     Extensions.TraceException(canceledException);

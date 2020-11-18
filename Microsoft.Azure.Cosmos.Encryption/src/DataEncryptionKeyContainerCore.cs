@@ -147,13 +147,8 @@ namespace Microsoft.Azure.Cosmos.Encryption
 
                 Debug.Assert(response.Resource != null);
             }
-            catch (CosmosException ex)
+            catch (CosmosException ex) when (ex.StatusCode == HttpStatusCode.PreconditionFailed)
             {
-                if (!ex.StatusCode.Equals(HttpStatusCode.PreconditionFailed))
-                {
-                    throw;
-                }
-
                 // Handle if exception is due to etag mismatch. The scenario is as follows - say there are 2 clients A and B that both have the DEK properties cached.
                 // From A, rewrap worked and the DEK is updated. Now from B, rewrap was attempted later based on the cached properties which will fail due to etag mismatch.
                 // To address this, we do an explicit read, which reads the key from storage and updates the cached properties; and then attempt rewrap again.
@@ -262,13 +257,13 @@ namespace Microsoft.Azure.Cosmos.Encryption
             }
         }
 
-        private async Task<ItemResponse<DataEncryptionKeyProperties>> ReadInternalAsync(
+        private Task<ItemResponse<DataEncryptionKeyProperties>> ReadInternalAsync(
             string id,
             ItemRequestOptions requestOptions,
             CosmosDiagnosticsContext diagnosticsContext,
             CancellationToken cancellationToken)
         {
-            return await this.DekProvider.Container.ReadItemAsync<DataEncryptionKeyProperties>(
+            return this.DekProvider.Container.ReadItemAsync<DataEncryptionKeyProperties>(
                 id,
                 new PartitionKey(id),
                 requestOptions,
