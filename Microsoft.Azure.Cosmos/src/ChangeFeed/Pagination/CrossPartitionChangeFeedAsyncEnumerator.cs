@@ -157,6 +157,7 @@ namespace Microsoft.Azure.Cosmos.ChangeFeed.Pagination
                     cancellationToken),
                 comparer: default /* this uses a regular queue instead of prioirty queue */,
                 maxConcurrency: default,
+                isStreamingOperation: true,
                 cancellationToken,
                 state);
 
