@@ -43,9 +43,12 @@
         {
             [JsonIgnore]
             public Type Type { get; }
-            public Dictionary<string, TypeTree> Subclasses { get; } = new Dictionary<string, TypeTree>();
-            public Dictionary<string, MemberMetadata> Members { get; } = new Dictionary<string, MemberMetadata>();
-            public Dictionary<string, TypeTree> NestedTypes { get; } = new Dictionary<string, TypeTree>();
+
+            public SortedDictionary<string, TypeTree> Subclasses { get; } = new SortedDictionary<string, TypeTree>();
+
+            public SortedDictionary<string, MemberMetadata> Members { get; } = new SortedDictionary<string, MemberMetadata>();
+
+            public SortedDictionary<string, TypeTree> NestedTypes { get; } = new SortedDictionary<string, TypeTree>();
 
             public TypeTree(Type type)
             {
@@ -293,7 +296,10 @@
 
         private class InvariantComparer : IComparer<string>
         {
-            public int Compare(string a, string b) => Comparer.DefaultInvariant.Compare(a, b);
+            public int Compare(string a, string b)
+            {
+                return Comparer.DefaultInvariant.Compare(a, b);
+            }
         }
     }
 }
