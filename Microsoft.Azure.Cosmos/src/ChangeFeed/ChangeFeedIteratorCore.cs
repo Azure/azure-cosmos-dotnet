@@ -110,11 +110,7 @@ namespace Microsoft.Azure.Cosmos.ChangeFeed
                                             message: $"Failed to parse token: {cosmosObject}."));
                                 }
 
-                                FeedRangeEpk feedRangeEpk = new FeedRangeEpk(new Documents.Routing.Range<string>(
-                                    min: min.Value,
-                                    max: max.Value,
-                                    isMinInclusive: true,
-                                    isMaxInclusive: false));
+                                FeedRangeEpkRange feedRangeEpk = new FeedRangeEpkRange(min.Value, max.Value);
                                 ChangeFeedState state = token is CosmosNull ? ChangeFeedState.Beginning() : ChangeFeedStateContinuation.Continuation(token);
 
                                 FeedRangeState<ChangeFeedState> feedRangeState = new FeedRangeState<ChangeFeedState>(feedRangeEpk, state);
@@ -275,7 +271,8 @@ namespace Microsoft.Azure.Cosmos.ChangeFeed
                 {
                     FeedRangeState<ChangeFeedState> changeFeedFeedRangeState = crossFeedRangeState.Value.Span[i];
                     string token = changeFeedFeedRangeState.State is ChangeFeedStateContinuation changeFeedStateContinuation ? ((CosmosString)changeFeedStateContinuation.ContinuationToken).Value : null;
-                    Documents.Routing.Range<string> range = ((FeedRangeEpk)changeFeedFeedRangeState.FeedRange).Range;
+                    FeedRangeEpkRange epkRange = (FeedRangeEpkRange)changeFeedFeedRangeState.FeedRange;
+                    Documents.Routing.Range<string> range = new Documents.Routing.Range<string>(epkRange.StartEpkInclusive, epkRange.EndEpkExclusive, isMinInclusive: true, isMaxInclusive: false);
                     CompositeContinuationToken compositeContinuationToken = new CompositeContinuationToken()
                     {
                         Range = range,
@@ -287,7 +284,7 @@ namespace Microsoft.Azure.Cosmos.ChangeFeed
 
                 FeedRangeCompositeContinuation feedRangeCompositeContinuationToken = new FeedRangeCompositeContinuation(
                     await this.documentContainer.GetResourceIdentifierAsync(trace, cancellationToken),
-                    FeedRangeEpk.FullRange,
+                    FeedRangeEpkRange.FullRange,
                     compositeContinuationTokens);
 
                 continuationToken = feedRangeCompositeContinuationToken.ToString();

@@ -14,7 +14,15 @@ namespace Microsoft.Azure.Cosmos.Query.Core.Pipeline.CrossPartition.Parallel
     /// <summary>
     /// A composite continuation token that has both backend continuation token and partition range information. 
     /// </summary>
-    internal sealed class ParallelContinuationToken : IPartitionedToken
+#if INTERNAL
+#pragma warning disable CS1591 // Missing XML comment for publicly visible type or member
+#pragma warning disable SA1600 // Elements should be documented
+#pragma warning disable SA1601 // Partial elements should be documented
+    public
+#else
+    internal
+#endif 
+        sealed class ParallelContinuationToken : IPartitionedToken
     {
         private static class PropertyNames
         {
@@ -25,15 +33,20 @@ namespace Microsoft.Azure.Cosmos.Query.Core.Pipeline.CrossPartition.Parallel
             public const string Max = "max";
         }
 
-        public ParallelContinuationToken(string token, Range<string> range)
+        internal ParallelContinuationToken(string token, Range<string> range)
         {
             this.Token = token;
-            this.Range = range ?? throw new ArgumentNullException(nameof(range));
+            this.Range = (range.Min, range.Max);
+        }
+
+        public ParallelContinuationToken(string token, string min, string max)
+            : this(token, new Range<string>(min, max, isMinInclusive: true, isMaxInclusive: false))
+        {
         }
 
         public string Token { get; }
 
-        public Range<string> Range { get; }
+        public (string Min, string Max) Range { get; }
 
         public static CosmosElement ToCosmosElement(ParallelContinuationToken parallelContinuationToken)
         {
