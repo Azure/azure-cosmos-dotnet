@@ -88,6 +88,7 @@ namespace Microsoft.Azure.Cosmos.Query.Core.Pipeline.Aggregate
 
                 double requestCharge = 0;
                 long responseLengthBytes = 0;
+                bool pendingPKDelete = false;
                 while (await this.inputStage.MoveNextAsync(trace))
                 {
                     TryCatch<QueryPage> tryGetPageFromSource = this.inputStage.Current;
@@ -101,6 +102,7 @@ namespace Microsoft.Azure.Cosmos.Query.Core.Pipeline.Aggregate
 
                     requestCharge += sourcePage.RequestCharge;
                     responseLengthBytes += sourcePage.ResponseLengthInBytes;
+                    pendingPKDelete |= sourcePage.PendingPKDelete;
 
                     foreach (CosmosElement element in sourcePage.Documents)
                     {
@@ -125,6 +127,7 @@ namespace Microsoft.Azure.Cosmos.Query.Core.Pipeline.Aggregate
                     requestCharge: requestCharge,
                     activityId: default,
                     responseLengthInBytes: responseLengthBytes,
+                    pendingPKDelete: pendingPKDelete,
                     cosmosQueryExecutionInfo: default,
                     disallowContinuationTokenMessage: default,
                     additionalHeaders: default,

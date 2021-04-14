@@ -75,6 +75,7 @@ namespace Microsoft.Azure.Cosmos.Query.Core.Pipeline.DCount
                 double requestCharge = 0;
                 long responseLengthBytes = 0;
                 ImmutableDictionary<string, string> additionalHeaders = null;
+                bool pendingPKDelete = false;
                 while (await this.inputStage.MoveNextAsync(trace))
                 {
                     TryCatch<QueryPage> tryGetPageFromSource = this.inputStage.Current;
@@ -89,6 +90,7 @@ namespace Microsoft.Azure.Cosmos.Query.Core.Pipeline.DCount
                     requestCharge += sourcePage.RequestCharge;
                     responseLengthBytes += sourcePage.ResponseLengthInBytes;
                     additionalHeaders = sourcePage.AdditionalHeaders;
+                    pendingPKDelete |= sourcePage.PendingPKDelete;
 
                     this.cancellationToken.ThrowIfCancellationRequested();
                     this.count += sourcePage.Documents.Count;
@@ -106,6 +108,7 @@ namespace Microsoft.Azure.Cosmos.Query.Core.Pipeline.DCount
                     requestCharge: requestCharge,
                     activityId: default,
                     responseLengthInBytes: responseLengthBytes,
+                    pendingPKDelete: pendingPKDelete,
                     cosmosQueryExecutionInfo: default,
                     disallowContinuationTokenMessage: default,
                     additionalHeaders: additionalHeaders,

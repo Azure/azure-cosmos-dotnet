@@ -204,7 +204,8 @@ namespace Microsoft.Azure.Cosmos.Query
                 {
                     RequestCharge = tryGetQueryPage.Result.RequestCharge,
                     ActivityId = tryGetQueryPage.Result.ActivityId,
-                    SubStatusCode = Documents.SubStatusCodes.Unknown
+                    SubStatusCode = Documents.SubStatusCodes.Unknown,
+                    PendingPartitionKeyDelete = tryGetQueryPage.Result.PendingPKDelete.ToString()
                 };
 
                 foreach (KeyValuePair<string, string> kvp in tryGetQueryPage.Result.AdditionalHeaders)

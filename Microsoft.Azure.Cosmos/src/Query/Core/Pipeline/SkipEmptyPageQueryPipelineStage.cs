@@ -22,6 +22,7 @@ namespace Microsoft.Azure.Cosmos.Query.Core.Pipeline
         private double cumulativeRequestCharge;
         private long cumulativeResponseLengthInBytes;
         private ImmutableDictionary<string, string> cumulativeAdditionalHeaders;
+        private bool cumulativePendingPKDelete;
         private CancellationToken cancellationToken;
         private bool returnedFinalStats;
 
@@ -58,6 +59,7 @@ namespace Microsoft.Azure.Cosmos.Query.Core.Pipeline
                         requestCharge: this.cumulativeRequestCharge,
                         activityId: Guid.Empty.ToString(),
                         responseLengthInBytes: this.cumulativeResponseLengthInBytes,
+                        pendingPKDelete: this.cumulativePendingPKDelete,
                         cosmosQueryExecutionInfo: default,
                         disallowContinuationTokenMessage: default,
                         additionalHeaders: this.cumulativeAdditionalHeaders,
@@ -65,6 +67,7 @@ namespace Microsoft.Azure.Cosmos.Query.Core.Pipeline
                     this.cumulativeRequestCharge = 0;
                     this.cumulativeResponseLengthInBytes = 0;
                     this.cumulativeAdditionalHeaders = null;
+                    this.cumulativePendingPKDelete = false;
                     this.returnedFinalStats = true;
                     this.Current = TryCatch<QueryPage>.FromResult(queryPage);
                     return true;
@@ -87,6 +90,7 @@ namespace Microsoft.Azure.Cosmos.Query.Core.Pipeline
                 this.cumulativeRequestCharge += sourcePage.RequestCharge;
                 this.cumulativeResponseLengthInBytes += sourcePage.ResponseLengthInBytes;
                 this.cumulativeAdditionalHeaders = sourcePage.AdditionalHeaders;
+                this.cumulativePendingPKDelete |= sourcePage.PendingPKDelete;
                 if (sourcePage.State == null)
                 {
                     QueryPage queryPage = new QueryPage(
@@ -94,6 +98,7 @@ namespace Microsoft.Azure.Cosmos.Query.Core.Pipeline
                         requestCharge: sourcePage.RequestCharge + this.cumulativeRequestCharge,
                         activityId: sourcePage.ActivityId,
                         responseLengthInBytes: sourcePage.ResponseLengthInBytes + this.cumulativeResponseLengthInBytes,
+                        pendingPKDelete: sourcePage.PendingPKDelete || this.cumulativePendingPKDelete,
                         cosmosQueryExecutionInfo: sourcePage.CosmosQueryExecutionInfo,
                         disallowContinuationTokenMessage: sourcePage.DisallowContinuationTokenMessage,
                         additionalHeaders: sourcePage.AdditionalHeaders,
@@ -101,6 +106,7 @@ namespace Microsoft.Azure.Cosmos.Query.Core.Pipeline
                     this.cumulativeRequestCharge = 0;
                     this.cumulativeResponseLengthInBytes = 0;
                     this.cumulativeAdditionalHeaders = null;
+                    this.cumulativePendingPKDelete = false;
                     this.Current = TryCatch<QueryPage>.FromResult(queryPage);
                     return true;
                 }
@@ -116,6 +122,7 @@ namespace Microsoft.Azure.Cosmos.Query.Core.Pipeline
                     requestCharge: sourcePage.RequestCharge + this.cumulativeRequestCharge,
                     activityId: sourcePage.ActivityId,
                     responseLengthInBytes: sourcePage.ResponseLengthInBytes + this.cumulativeResponseLengthInBytes,
+                    pendingPKDelete: sourcePage.PendingPKDelete || this.cumulativePendingPKDelete,
                     cosmosQueryExecutionInfo: sourcePage.CosmosQueryExecutionInfo,
                     disallowContinuationTokenMessage: sourcePage.DisallowContinuationTokenMessage,
                     additionalHeaders: sourcePage.AdditionalHeaders,
@@ -123,6 +130,7 @@ namespace Microsoft.Azure.Cosmos.Query.Core.Pipeline
                 this.cumulativeRequestCharge = 0;
                 this.cumulativeResponseLengthInBytes = 0;
                 this.cumulativeAdditionalHeaders = null;
+                this.cumulativePendingPKDelete = false;
             }
             else
             {

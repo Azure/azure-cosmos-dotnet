@@ -25,6 +25,7 @@ namespace Microsoft.Azure.Cosmos.Query.Core.Pipeline.Pagination
             double requestCharge,
             string activityId,
             long responseLengthInBytes,
+            bool pendingPKDelete,
             CosmosQueryExecutionInfo cosmosQueryExecutionInfo,
             string disallowContinuationTokenMessage,
             IReadOnlyDictionary<string, string> additionalHeaders,
@@ -33,6 +34,7 @@ namespace Microsoft.Azure.Cosmos.Query.Core.Pipeline.Pagination
         {
             this.Documents = documents ?? throw new ArgumentNullException(nameof(documents));
             this.ResponseLengthInBytes = responseLengthInBytes < 0 ? throw new ArgumentOutOfRangeException(nameof(responseLengthInBytes)) : responseLengthInBytes;
+            this.PendingPKDelete = pendingPKDelete;
             this.CosmosQueryExecutionInfo = cosmosQueryExecutionInfo;
             this.DisallowContinuationTokenMessage = disallowContinuationTokenMessage;
         }
@@ -40,6 +42,8 @@ namespace Microsoft.Azure.Cosmos.Query.Core.Pipeline.Pagination
         public IReadOnlyList<CosmosElement> Documents { get; }
 
         public long ResponseLengthInBytes { get; }
+
+        public bool PendingPKDelete { get; }
 
         public CosmosQueryExecutionInfo CosmosQueryExecutionInfo { get; }
 
