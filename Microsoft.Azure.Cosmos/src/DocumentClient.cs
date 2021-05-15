@@ -208,7 +208,7 @@ namespace Microsoft.Azure.Cosmos
         {
             if (authKey == null)
             {
-                throw new ArgumentNullException("authKey");
+                throw new ArgumentNullException(nameof(authKey));
             }
 
             if (authKey != null)
@@ -643,7 +643,7 @@ namespace Microsoft.Azure.Cosmos
         {
             if (serviceEndpoint == null)
             {
-                throw new ArgumentNullException("serviceEndpoint");
+                throw new ArgumentNullException(nameof(serviceEndpoint));
             }
 
             DefaultTrace.InitEventListener();
@@ -1047,7 +1047,7 @@ namespace Microsoft.Azure.Cosmos
                 SessionContainer container = value as SessionContainer;
                 if (container == null)
                 {
-                    throw new ArgumentNullException("value");
+                    throw new ArgumentNullException(nameof(value));
                 }
 
                 if (!string.Equals(this.ServiceEndpoint.Host, container.HostName, StringComparison.OrdinalIgnoreCase))
@@ -1519,7 +1519,7 @@ namespace Microsoft.Azure.Cosmos
 
             if (database == null)
             {
-                throw new ArgumentNullException("database");
+                throw new ArgumentNullException(nameof(database));
             }
 
             this.ValidateResource(database);
@@ -1586,7 +1586,7 @@ namespace Microsoft.Azure.Cosmos
         {
             if (database == null)
             {
-                throw new ArgumentNullException("database");
+                throw new ArgumentNullException(nameof(database));
             }
 
             // Doing a Read before Create will give us better latency for existing databases
@@ -1756,12 +1756,12 @@ namespace Microsoft.Azure.Cosmos
 
             if (string.IsNullOrEmpty(documentCollectionLink))
             {
-                throw new ArgumentNullException("documentCollectionLink");
+                throw new ArgumentNullException(nameof(documentCollectionLink));
             }
 
             if (document == null)
             {
-                throw new ArgumentNullException("document");
+                throw new ArgumentNullException(nameof(document));
             }
 
             INameValueCollection headers = this.GetRequestHeaders(options);
@@ -1850,12 +1850,12 @@ namespace Microsoft.Azure.Cosmos
 
             if (string.IsNullOrEmpty(databaseLink))
             {
-                throw new ArgumentNullException("databaseLink");
+                throw new ArgumentNullException(nameof(databaseLink));
             }
 
             if (documentCollection == null)
             {
-                throw new ArgumentNullException("documentCollection");
+                throw new ArgumentNullException(nameof(documentCollection));
             }
 
             this.ValidateResource(documentCollection);
@@ -1930,12 +1930,12 @@ namespace Microsoft.Azure.Cosmos
         {
             if (string.IsNullOrEmpty(databaseLink))
             {
-                throw new ArgumentNullException("databaseLink");
+                throw new ArgumentNullException(nameof(databaseLink));
             }
 
             if (documentCollection == null)
             {
-                throw new ArgumentNullException("documentCollection");
+                throw new ArgumentNullException(nameof(documentCollection));
             }
 
             // ReadDatabaseAsync call is needed to support this API that takes databaseLink as a parameter, to be consistent with CreateDocumentCollectionAsync. We need to construct the collectionLink to make
@@ -1994,12 +1994,12 @@ namespace Microsoft.Azure.Cosmos
 
             if (string.IsNullOrEmpty(sourceDocumentCollectionLink))
             {
-                throw new ArgumentNullException("sourceDocumentCollectionLink");
+                throw new ArgumentNullException(nameof(sourceDocumentCollectionLink));
             }
 
             if (targetDocumentCollection == null)
             {
-                throw new ArgumentNullException("targetDocumentCollection");
+                throw new ArgumentNullException(nameof(targetDocumentCollection));
             }
 
             bool isFeed;
@@ -2016,7 +2016,7 @@ namespace Microsoft.Azure.Cosmos
             }
             else
             {
-                throw new ArgumentNullException("sourceDocumentCollectionLink");
+                throw new ArgumentNullException(nameof(sourceDocumentCollectionLink));
             }
 
             string sourceCollId;
@@ -2027,7 +2027,7 @@ namespace Microsoft.Azure.Cosmos
             }
             else
             {
-                throw new ArgumentNullException("sourceDocumentCollectionLink");
+                throw new ArgumentNullException(nameof(sourceDocumentCollectionLink));
             }
 
             this.ValidateResource(targetDocumentCollection);
@@ -2079,7 +2079,7 @@ namespace Microsoft.Azure.Cosmos
         {
             if (string.IsNullOrEmpty(targetDocumentCollectionLink))
             {
-                throw new ArgumentNullException("targetDocumentCollectionLink");
+                throw new ArgumentNullException(nameof(targetDocumentCollectionLink));
             }
 
             ResourceResponse<DocumentCollection> response = await this.ReadDocumentCollectionPrivateAsync(
@@ -2164,12 +2164,12 @@ namespace Microsoft.Azure.Cosmos
 
             if (string.IsNullOrEmpty(collectionLink))
             {
-                throw new ArgumentNullException("collectionLink");
+                throw new ArgumentNullException(nameof(collectionLink));
             }
 
             if (storedProcedure == null)
             {
-                throw new ArgumentNullException("storedProcedure");
+                throw new ArgumentNullException(nameof(storedProcedure));
             }
 
             this.ValidateResource(storedProcedure);
@@ -2260,12 +2260,12 @@ namespace Microsoft.Azure.Cosmos
 
             if (string.IsNullOrEmpty(collectionLink))
             {
-                throw new ArgumentNullException("collectionLink");
+                throw new ArgumentNullException(nameof(collectionLink));
             }
 
             if (trigger == null)
             {
-                throw new ArgumentNullException("trigger");
+                throw new ArgumentNullException(nameof(trigger));
             }
 
             this.ValidateResource(trigger);
@@ -2346,12 +2346,12 @@ namespace Microsoft.Azure.Cosmos
 
             if (string.IsNullOrEmpty(collectionLink))
             {
-                throw new ArgumentNullException("collectionLink");
+                throw new ArgumentNullException(nameof(collectionLink));
             }
 
             if (function == null)
             {
-                throw new ArgumentNullException("function");
+                throw new ArgumentNullException(nameof(function));
             }
 
             this.ValidateResource(function);
@@ -2419,12 +2419,12 @@ namespace Microsoft.Azure.Cosmos
 
             if (string.IsNullOrEmpty(databaseLink))
             {
-                throw new ArgumentNullException("databaseLink");
+                throw new ArgumentNullException(nameof(databaseLink));
             }
 
             if (userDefinedType == null)
             {
-                throw new ArgumentNullException("userDefinedType");
+                throw new ArgumentNullException(nameof(userDefinedType));
             }
 
             this.ValidateResource(userDefinedType);
@@ -2507,7 +2507,7 @@ namespace Microsoft.Azure.Cosmos
 
             if (snapshot == null)
             {
-                throw new ArgumentNullException("snapshot");
+                throw new ArgumentNullException(nameof(snapshot));
             }
 
             this.ValidateResource(snapshot);
@@ -2572,7 +2572,7 @@ namespace Microsoft.Azure.Cosmos
 
             if (string.IsNullOrEmpty(databaseLink))
             {
-                throw new ArgumentNullException("databaseLink");
+                throw new ArgumentNullException(nameof(databaseLink));
             }
 
             INameValueCollection headers = this.GetRequestHeaders(options);
@@ -2630,7 +2630,7 @@ namespace Microsoft.Azure.Cosmos
 
             if (string.IsNullOrEmpty(documentLink))
             {
-                throw new ArgumentNullException("documentLink");
+                throw new ArgumentNullException(nameof(documentLink));
             }
 
             INameValueCollection headers = this.GetRequestHeaders(options);
@@ -2689,7 +2689,7 @@ namespace Microsoft.Azure.Cosmos
 
             if (string.IsNullOrEmpty(documentCollectionLink))
             {
-                throw new ArgumentNullException("documentCollectionLink");
+                throw new ArgumentNullException(nameof(documentCollectionLink));
             }
 
             INameValueCollection headers = this.GetRequestHeaders(options);
@@ -2746,7 +2746,7 @@ namespace Microsoft.Azure.Cosmos
 
             if (string.IsNullOrEmpty(storedProcedureLink))
             {
-                throw new ArgumentNullException("storedProcedureLink");
+                throw new ArgumentNullException(nameof(storedProcedureLink));
             }
 
             INameValueCollection headers = this.GetRequestHeaders(options);
@@ -2803,7 +2803,7 @@ namespace Microsoft.Azure.Cosmos
 
             if (string.IsNullOrEmpty(triggerLink))
             {
-                throw new ArgumentNullException("triggerLink");
+                throw new ArgumentNullException(nameof(triggerLink));
             }
 
             INameValueCollection headers = this.GetRequestHeaders(options);
@@ -2860,7 +2860,7 @@ namespace Microsoft.Azure.Cosmos
 
             if (string.IsNullOrEmpty(functionLink))
             {
-                throw new ArgumentNullException("functionLink");
+                throw new ArgumentNullException(nameof(functionLink));
             }
 
             INameValueCollection headers = this.GetRequestHeaders(options);
@@ -2917,7 +2917,7 @@ namespace Microsoft.Azure.Cosmos
 
             if (string.IsNullOrEmpty(conflictLink))
             {
-                throw new ArgumentNullException("conflictLink");
+                throw new ArgumentNullException(nameof(conflictLink));
             }
 
             INameValueCollection headers = this.GetRequestHeaders(options);
@@ -2975,7 +2975,7 @@ namespace Microsoft.Azure.Cosmos
 
             if (string.IsNullOrEmpty(snapshotLink))
             {
-                throw new ArgumentNullException("snapshotLink");
+                throw new ArgumentNullException(nameof(snapshotLink));
             }
 
             INameValueCollection headers = this.GetRequestHeaders(options);
@@ -3017,7 +3017,7 @@ namespace Microsoft.Azure.Cosmos
 
             if (documentCollection == null)
             {
-                throw new ArgumentNullException("documentCollection");
+                throw new ArgumentNullException(nameof(documentCollection));
             }
 
             this.ValidateResource(documentCollection);
@@ -3124,12 +3124,12 @@ namespace Microsoft.Azure.Cosmos
         {
             if (string.IsNullOrEmpty(documentLink))
             {
-                throw new ArgumentNullException("documentLink");
+                throw new ArgumentNullException(nameof(documentLink));
             }
 
             if (document == null)
             {
-                throw new ArgumentNullException("document");
+                throw new ArgumentNullException(nameof(document));
             }
 
             Document typedDocument = Document.FromObject(document, this.GetSerializerSettingsForRequest(options));
@@ -3198,7 +3198,7 @@ namespace Microsoft.Azure.Cosmos
 
             if (document == null)
             {
-                throw new ArgumentNullException("document");
+                throw new ArgumentNullException(nameof(document));
             }
 
             this.ValidateResource(document);
@@ -3274,7 +3274,7 @@ namespace Microsoft.Azure.Cosmos
 
             if (storedProcedure == null)
             {
-                throw new ArgumentNullException("storedProcedure");
+                throw new ArgumentNullException(nameof(storedProcedure));
             }
 
             this.ValidateResource(storedProcedure);
@@ -3344,7 +3344,7 @@ namespace Microsoft.Azure.Cosmos
 
             if (trigger == null)
             {
-                throw new ArgumentNullException("trigger");
+                throw new ArgumentNullException(nameof(trigger));
             }
 
             this.ValidateResource(trigger);
@@ -3418,7 +3418,7 @@ namespace Microsoft.Azure.Cosmos
 
             if (function == null)
             {
-                throw new ArgumentNullException("function");
+                throw new ArgumentNullException(nameof(function));
             }
 
             this.ValidateResource(function);
@@ -3488,7 +3488,7 @@ namespace Microsoft.Azure.Cosmos
         {
             if (offer == null)
             {
-                throw new ArgumentNullException("offer");
+                throw new ArgumentNullException(nameof(offer));
             }
 
             using (DocumentServiceRequest request = DocumentServiceRequest.Create(
@@ -3553,7 +3553,7 @@ namespace Microsoft.Azure.Cosmos
 
             if (userDefinedType == null)
             {
-                throw new ArgumentNullException("userDefinedType");
+                throw new ArgumentNullException(nameof(userDefinedType));
             }
 
             this.ValidateResource(userDefinedType);
@@ -3635,7 +3635,7 @@ namespace Microsoft.Azure.Cosmos
 
             if (string.IsNullOrEmpty(databaseLink))
             {
-                throw new ArgumentNullException("databaseLink");
+                throw new ArgumentNullException(nameof(databaseLink));
             }
 
             INameValueCollection headers = this.GetRequestHeaders(options);
@@ -3715,7 +3715,7 @@ namespace Microsoft.Azure.Cosmos
 
             if (string.IsNullOrEmpty(documentLink))
             {
-                throw new ArgumentNullException("documentLink");
+                throw new ArgumentNullException(nameof(documentLink));
             }
 
             INameValueCollection headers = this.GetRequestHeaders(options);
@@ -3797,7 +3797,7 @@ namespace Microsoft.Azure.Cosmos
 
             if (string.IsNullOrEmpty(documentLink))
             {
-                throw new ArgumentNullException("documentLink");
+                throw new ArgumentNullException(nameof(documentLink));
             }
 
             INameValueCollection headers = this.GetRequestHeaders(options);
@@ -3880,7 +3880,7 @@ namespace Microsoft.Azure.Cosmos
 
             if (string.IsNullOrEmpty(documentCollectionLink))
             {
-                throw new ArgumentNullException("documentCollectionLink");
+                throw new ArgumentNullException(nameof(documentCollectionLink));
             }
 
             INameValueCollection headers = this.GetRequestHeaders(options);
@@ -3959,7 +3959,7 @@ namespace Microsoft.Azure.Cosmos
 
             if (string.IsNullOrEmpty(storedProcedureLink))
             {
-                throw new ArgumentNullException("storedProcedureLink");
+                throw new ArgumentNullException(nameof(storedProcedureLink));
             }
 
             INameValueCollection headers = this.GetRequestHeaders(options);
@@ -4038,7 +4038,7 @@ namespace Microsoft.Azure.Cosmos
 
             if (string.IsNullOrEmpty(triggerLink))
             {
-                throw new ArgumentNullException("triggerLink");
+                throw new ArgumentNullException(nameof(triggerLink));
             }
 
             INameValueCollection headers = this.GetRequestHeaders(options);
@@ -4117,7 +4117,7 @@ namespace Microsoft.Azure.Cosmos
 
             if (string.IsNullOrEmpty(functionLink))
             {
-                throw new ArgumentNullException("functionLink");
+                throw new ArgumentNullException(nameof(functionLink));
             }
 
             INameValueCollection headers = this.GetRequestHeaders(options);
@@ -4196,7 +4196,7 @@ namespace Microsoft.Azure.Cosmos
 
             if (string.IsNullOrEmpty(conflictLink))
             {
-                throw new ArgumentNullException("conflictLink");
+                throw new ArgumentNullException(nameof(conflictLink));
             }
 
             INameValueCollection headers = this.GetRequestHeaders(options);
@@ -4283,7 +4283,7 @@ namespace Microsoft.Azure.Cosmos
 
             if (string.IsNullOrEmpty(offerLink))
             {
-                throw new ArgumentNullException("offerLink");
+                throw new ArgumentNullException(nameof(offerLink));
             }
 
             using (DocumentServiceRequest request = DocumentServiceRequest.Create(
@@ -4361,7 +4361,7 @@ namespace Microsoft.Azure.Cosmos
 
             if (string.IsNullOrEmpty(documentSchemaLink))
             {
-                throw new ArgumentNullException("documentSchemaLink");
+                throw new ArgumentNullException(nameof(documentSchemaLink));
             }
 
             INameValueCollection headers = this.GetRequestHeaders(options);
@@ -4441,7 +4441,7 @@ namespace Microsoft.Azure.Cosmos
 
             if (string.IsNullOrEmpty(userDefinedTypeLink))
             {
-                throw new ArgumentNullException("userDefinedTypeLink");
+                throw new ArgumentNullException(nameof(userDefinedTypeLink));
             }
 
             INameValueCollection headers = this.GetRequestHeaders(options);
@@ -4517,7 +4517,7 @@ namespace Microsoft.Azure.Cosmos
 
             if (string.IsNullOrEmpty(snapshotLink))
             {
-                throw new ArgumentNullException("snapshotLink");
+                throw new ArgumentNullException(nameof(snapshotLink));
             }
 
             INameValueCollection headers = this.GetRequestHeaders(options);
@@ -4645,7 +4645,7 @@ namespace Microsoft.Azure.Cosmos
 
             if (string.IsNullOrEmpty(partitionKeyRangesLink))
             {
-                throw new ArgumentNullException("partitionKeyRangesLink");
+                throw new ArgumentNullException(nameof(partitionKeyRangesLink));
             }
 
             return await this.CreatePartitionKeyRangeFeedReader(partitionKeyRangesLink, options).ExecuteNextAsync();
@@ -4714,7 +4714,7 @@ namespace Microsoft.Azure.Cosmos
 
             if (string.IsNullOrEmpty(collectionsLink))
             {
-                throw new ArgumentNullException("collectionsLink");
+                throw new ArgumentNullException(nameof(collectionsLink));
             }
 
             return await this.CreateDocumentCollectionFeedReader(collectionsLink, options).ExecuteNextAsync();
@@ -4783,7 +4783,7 @@ namespace Microsoft.Azure.Cosmos
 
             if (string.IsNullOrEmpty(storedProceduresLink))
             {
-                throw new ArgumentNullException("storedProceduresLink");
+                throw new ArgumentNullException(nameof(storedProceduresLink));
             }
 
             return await this.CreateStoredProcedureFeedReader(storedProceduresLink, options).ExecuteNextAsync();
@@ -4852,7 +4852,7 @@ namespace Microsoft.Azure.Cosmos
 
             if (string.IsNullOrEmpty(triggersLink))
             {
-                throw new ArgumentNullException("triggersLink");
+                throw new ArgumentNullException(nameof(triggersLink));
             }
 
             return await this.CreateTriggerFeedReader(triggersLink, options).ExecuteNextAsync();
@@ -4921,7 +4921,7 @@ namespace Microsoft.Azure.Cosmos
 
             if (string.IsNullOrEmpty(userDefinedFunctionsLink))
             {
-                throw new ArgumentNullException("userDefinedFunctionsLink");
+                throw new ArgumentNullException(nameof(userDefinedFunctionsLink));
             }
 
             return await this.CreateUserDefinedFunctionFeedReader(userDefinedFunctionsLink, options).ExecuteNextAsync();
@@ -4993,7 +4993,7 @@ namespace Microsoft.Azure.Cosmos
 
             if (string.IsNullOrEmpty(documentsLink))
             {
-                throw new ArgumentNullException("documentsLink");
+                throw new ArgumentNullException(nameof(documentsLink));
             }
 
             DocumentFeedResponse<Document> response = await this.CreateDocumentFeedReader(documentsLink, options).ExecuteNextAsync(cancellationToken);
@@ -5068,7 +5068,7 @@ namespace Microsoft.Azure.Cosmos
 
             if (string.IsNullOrEmpty(conflictsLink))
             {
-                throw new ArgumentNullException("conflictsLink");
+                throw new ArgumentNullException(nameof(conflictsLink));
             }
 
             return await this.CreateConflictFeedReader(conflictsLink, options).ExecuteNextAsync();
@@ -5194,7 +5194,7 @@ namespace Microsoft.Azure.Cosmos
 
             if (string.IsNullOrEmpty(documentCollectionSchemaLink))
             {
-                throw new ArgumentNullException("documentCollectionSchemaLink");
+                throw new ArgumentNullException(nameof(documentCollectionSchemaLink));
             }
 
             return await this.CreateSchemaFeedReader(documentCollectionSchemaLink, options).ExecuteNextAsync();
@@ -5263,7 +5263,7 @@ namespace Microsoft.Azure.Cosmos
 
             if (string.IsNullOrEmpty(userDefinedTypesLink))
             {
-                throw new ArgumentNullException("userDefinedTypesLink");
+                throw new ArgumentNullException(nameof(userDefinedTypesLink));
             }
 
             return await this.CreateUserDefinedTypeFeedReader(userDefinedTypesLink, options).ExecuteNextAsync();
@@ -5455,7 +5455,7 @@ namespace Microsoft.Azure.Cosmos
 
             if (string.IsNullOrEmpty(storedProcedureLink))
             {
-                throw new ArgumentNullException("storedProcedureLink");
+                throw new ArgumentNullException(nameof(storedProcedureLink));
             }
 
             JsonSerializerSettings serializerSettings = this.GetSerializerSettingsForRequest(options);
@@ -5556,7 +5556,7 @@ namespace Microsoft.Azure.Cosmos
 
             if (database == null)
             {
-                throw new ArgumentNullException("database");
+                throw new ArgumentNullException(nameof(database));
             }
 
             this.ValidateResource(database);
@@ -5711,12 +5711,12 @@ namespace Microsoft.Azure.Cosmos
 
             if (string.IsNullOrEmpty(documentCollectionLink))
             {
-                throw new ArgumentNullException("documentCollectionLink");
+                throw new ArgumentNullException(nameof(documentCollectionLink));
             }
 
             if (document == null)
             {
-                throw new ArgumentNullException("document");
+                throw new ArgumentNullException(nameof(document));
             }
 
             INameValueCollection headers = this.GetRequestHeaders(options);
@@ -5859,12 +5859,12 @@ namespace Microsoft.Azure.Cosmos
 
             if (string.IsNullOrEmpty(collectionLink))
             {
-                throw new ArgumentNullException("collectionLink");
+                throw new ArgumentNullException(nameof(collectionLink));
             }
 
             if (storedProcedure == null)
             {
-                throw new ArgumentNullException("storedProcedure");
+                throw new ArgumentNullException(nameof(storedProcedure));
             }
 
             this.ValidateResource(storedProcedure);
@@ -5955,12 +5955,12 @@ namespace Microsoft.Azure.Cosmos
 
             if (string.IsNullOrEmpty(collectionLink))
             {
-                throw new ArgumentNullException("collectionLink");
+                throw new ArgumentNullException(nameof(collectionLink));
             }
 
             if (trigger == null)
             {
-                throw new ArgumentNullException("trigger");
+                throw new ArgumentNullException(nameof(trigger));
             }
 
             this.ValidateResource(trigger);
@@ -6041,12 +6041,12 @@ namespace Microsoft.Azure.Cosmos
 
             if (string.IsNullOrEmpty(collectionLink))
             {
-                throw new ArgumentNullException("collectionLink");
+                throw new ArgumentNullException(nameof(collectionLink));
             }
 
             if (function == null)
             {
-                throw new ArgumentNullException("function");
+                throw new ArgumentNullException(nameof(function));
             }
 
             this.ValidateResource(function);
@@ -6114,12 +6114,12 @@ namespace Microsoft.Azure.Cosmos
 
             if (string.IsNullOrEmpty(databaseLink))
             {
-                throw new ArgumentNullException("databaseLink");
+                throw new ArgumentNullException(nameof(databaseLink));
             }
 
             if (userDefinedType == null)
             {
-                throw new ArgumentNullException("userDefinedType");
+                throw new ArgumentNullException(nameof(userDefinedType));
             }
 
             this.ValidateResource(userDefinedType);
@@ -6195,7 +6195,7 @@ namespace Microsoft.Azure.Cosmos
         {
             if (request == null)
             {
-                throw new ArgumentNullException("request");
+                throw new ArgumentNullException(nameof(request));
             }
 
             return this.ProcessRequestAsync(HttpConstants.HttpMethods.Post, request, retryPolicy, cancellationToken);
@@ -6208,7 +6208,7 @@ namespace Microsoft.Azure.Cosmos
         {
             if (request == null)
             {
-                throw new ArgumentNullException("request");
+                throw new ArgumentNullException(nameof(request));
             }
 
             return this.ProcessRequestAsync(HttpConstants.HttpMethods.Put, request, retryPolicy, cancellationToken);
@@ -6221,7 +6221,7 @@ namespace Microsoft.Azure.Cosmos
         {
             if (request == null)
             {
-                throw new ArgumentNullException("request");
+                throw new ArgumentNullException(nameof(request));
             }
 
             return this.ProcessRequestAsync(HttpConstants.HttpMethods.Get, request, retryPolicy, cancellationToken);
@@ -6234,7 +6234,7 @@ namespace Microsoft.Azure.Cosmos
         {
             if (request == null)
             {
-                throw new ArgumentNullException("request");
+                throw new ArgumentNullException(nameof(request));
             }
 
             return this.ProcessRequestAsync(HttpConstants.HttpMethods.Get, request, retryPolicy, cancellationToken);
@@ -6247,7 +6247,7 @@ namespace Microsoft.Azure.Cosmos
         {
             if (request == null)
             {
-                throw new ArgumentNullException("request");
+                throw new ArgumentNullException(nameof(request));
             }
 
             return this.ProcessRequestAsync(HttpConstants.HttpMethods.Delete, request, retryPolicy, cancellationToken);
@@ -6260,7 +6260,7 @@ namespace Microsoft.Azure.Cosmos
         {
             if (request == null)
             {
-                throw new ArgumentNullException("request");
+                throw new ArgumentNullException(nameof(request));
             }
 
             return this.ProcessRequestAsync(HttpConstants.HttpMethods.Post, request, retryPolicy, cancellationToken);
@@ -6273,7 +6273,7 @@ namespace Microsoft.Azure.Cosmos
         {
             if (request == null)
             {
-                throw new ArgumentNullException("request");
+                throw new ArgumentNullException(nameof(request));
             }
 
             return this.ProcessRequestAsync(HttpConstants.HttpMethods.Post, request, retryPolicy, cancellationToken);
@@ -6286,7 +6286,7 @@ namespace Microsoft.Azure.Cosmos
         {
             if (request == null)
             {
-                throw new ArgumentNullException("request");
+                throw new ArgumentNullException(nameof(request));
             }
 
             request.Headers[HttpConstants.HttpHeaders.IsUpsert] = bool.TrueString;

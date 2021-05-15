@@ -114,7 +114,7 @@ namespace Microsoft.Azure.Cosmos.Linq
         {
             if (inputExpression == null)
             {
-                throw new ArgumentNullException("inputExpression");
+                throw new ArgumentNullException(nameof(inputExpression));
             }
 
             Collection collection;
@@ -1921,7 +1921,7 @@ namespace Microsoft.Azure.Cosmos.Linq
 
             if (literals.Count == 0)
             {
-                throw new ArgumentException("memberIndexerExpression");
+                throw new ArgumentException(nameof(literals));
             }
 
             SqlPathExpression path = null;

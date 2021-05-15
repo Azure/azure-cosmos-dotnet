@@ -417,12 +417,12 @@ namespace Microsoft.Azure.Cosmos.Query
         {
             if (request == null)
             {
-                throw new ArgumentNullException("request");
+                throw new ArgumentNullException(nameof(request));
             }
 
             if (range == null)
             {
-                throw new ArgumentNullException("range");
+                throw new ArgumentNullException(nameof(range));
             }
 
             if (this.ResourceTypeEnum.IsPartitioned())
@@ -629,7 +629,7 @@ namespace Microsoft.Azure.Cosmos.Query
         {
             if (request == null)
             {
-                throw new ArgumentNullException("request");
+                throw new ArgumentNullException(nameof(request));
             }
 
             if (this.ResourceTypeEnum.IsPartitioned())

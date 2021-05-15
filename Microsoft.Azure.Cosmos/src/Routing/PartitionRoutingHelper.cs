@@ -388,7 +388,7 @@ namespace Microsoft.Azure.Cosmos.Routing
         {
             if (headers == null)
             {
-                throw new ArgumentNullException("headers");
+                throw new ArgumentNullException(nameof(headers));
             }
 
             compositeContinuationTokens = null;
