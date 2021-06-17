@@ -26,7 +26,6 @@
     │   │       └── Get Partition Key Ranges(00000000-0000-0000-0000-000000000000)  Routing-Component  MemberName@FilePath:42  12:00:00:000  0.00 milliseconds  
     │   │           └── Try Get Overlapping Ranges(00000000-0000-0000-0000-000000000000)  Routing-Component  MemberName@FilePath:42  12:00:00:000  0.00 milliseconds  
     │   └── MoveNextAsync(00000000-0000-0000-0000-000000000000)  Pagination-Component  MemberName@FilePath:42  12:00:00:000  0.00 milliseconds  
-    │       ├── Prefetching(00000000-0000-0000-0000-000000000000)  Pagination-Component  MemberName@FilePath:42  12:00:00:000  0.00 milliseconds  
     │       └── [05C1CFFFFFFFF8,05C1DFFFFFFFF8) move next(00000000-0000-0000-0000-000000000000)  Pagination-Component  MemberName@FilePath:42  12:00:00:000  0.00 milliseconds  
     │           └── Prefetch(00000000-0000-0000-0000-000000000000)  Pagination-Component  MemberName@FilePath:42  12:00:00:000  0.00 milliseconds  
     │               └── [05C1CFFFFFFFF8,05C1DFFFFFFFF8) move next(00000000-0000-0000-0000-000000000000)  Pagination-Component  MemberName@FilePath:42  12:00:00:000  0.00 milliseconds  
@@ -57,7 +56,6 @@
     │   │       └── Get Partition Key Ranges(00000000-0000-0000-0000-000000000000)  Routing-Component  MemberName@FilePath:42  12:00:00:000  0.00 milliseconds  
     │   │           └── Try Get Overlapping Ranges(00000000-0000-0000-0000-000000000000)  Routing-Component  MemberName@FilePath:42  12:00:00:000  0.00 milliseconds  
     │   └── MoveNextAsync(00000000-0000-0000-0000-000000000000)  Pagination-Component  MemberName@FilePath:42  12:00:00:000  0.00 milliseconds  
-    │       ├── Prefetching(00000000-0000-0000-0000-000000000000)  Pagination-Component  MemberName@FilePath:42  12:00:00:000  0.00 milliseconds  
     │       └── [,05C1CFFFFFFFF8) move next(00000000-0000-0000-0000-000000000000)  Pagination-Component  MemberName@FilePath:42  12:00:00:000  0.00 milliseconds  
     │           └── Prefetch(00000000-0000-0000-0000-000000000000)  Pagination-Component  MemberName@FilePath:42  12:00:00:000  0.00 milliseconds  
     │               └── [,05C1CFFFFFFFF8) move next(00000000-0000-0000-0000-000000000000)  Pagination-Component  MemberName@FilePath:42  12:00:00:000  0.00 milliseconds  
@@ -88,7 +86,6 @@
         │       └── Get Partition Key Ranges(00000000-0000-0000-0000-000000000000)  Routing-Component  MemberName@FilePath:42  12:00:00:000  0.00 milliseconds  
         │           └── Try Get Overlapping Ranges(00000000-0000-0000-0000-000000000000)  Routing-Component  MemberName@FilePath:42  12:00:00:000  0.00 milliseconds  
         └── MoveNextAsync(00000000-0000-0000-0000-000000000000)  Pagination-Component  MemberName@FilePath:42  12:00:00:000  0.00 milliseconds  
-            ├── Prefetching(00000000-0000-0000-0000-000000000000)  Pagination-Component  MemberName@FilePath:42  12:00:00:000  0.00 milliseconds  
             └── [05C1E7FFFFFFFA,FF) move next(00000000-0000-0000-0000-000000000000)  Pagination-Component  MemberName@FilePath:42  12:00:00:000  0.00 milliseconds  
                 └── Prefetch(00000000-0000-0000-0000-000000000000)  Pagination-Component  MemberName@FilePath:42  12:00:00:000  0.00 milliseconds  
                     └── [05C1E7FFFFFFFA,FF) move next(00000000-0000-0000-0000-000000000000)  Pagination-Component  MemberName@FilePath:42  12:00:00:000  0.00 milliseconds  
@@ -232,17 +229,6 @@
           "start time": "12:00:00:000",
           "duration in milliseconds": 0,
           "children": [
-            {
-              "name": "Prefetching",
-              "id": "00000000-0000-0000-0000-000000000000",
-              "caller info": {
-                "member": "MemberName",
-                "file": "FilePath",
-                "line": 42
-              },
-              "start time": "12:00:00:000",
-              "duration in milliseconds": 0
-            },
             {
               "name": "[05C1CFFFFFFFF8,05C1DFFFFFFFF8) move next",
               "id": "00000000-0000-0000-0000-000000000000",
@@ -495,17 +481,6 @@
           "duration in milliseconds": 0,
           "children": [
             {
-              "name": "Prefetching",
-              "id": "00000000-0000-0000-0000-000000000000",
-              "caller info": {
-                "member": "MemberName",
-                "file": "FilePath",
-                "line": 42
-              },
-              "start time": "12:00:00:000",
-              "duration in milliseconds": 0
-            },
-            {
               "name": "[,05C1CFFFFFFFF8) move next",
               "id": "00000000-0000-0000-0000-000000000000",
               "caller info": {
@@ -756,17 +731,6 @@
           "start time": "12:00:00:000",
           "duration in milliseconds": 0,
           "children": [
-            {
-              "name": "Prefetching",
-              "id": "00000000-0000-0000-0000-000000000000",
-              "caller info": {
-                "member": "MemberName",
-                "file": "FilePath",
-                "line": 42
-              },
-              "start time": "12:00:00:000",
-              "duration in milliseconds": 0
-            },
             {
               "name": "[05C1E7FFFFFFFA,FF) move next",
               "id": "00000000-0000-0000-0000-000000000000",
@@ -939,7 +903,6 @@
     │   │       └── Get Partition Key Ranges(00000000-0000-0000-0000-000000000000)  Routing-Component  MemberName@FilePath:42  12:00:00:000  0.00 milliseconds  
     │   │           └── Try Get Overlapping Ranges(00000000-0000-0000-0000-000000000000)  Routing-Component  MemberName@FilePath:42  12:00:00:000  0.00 milliseconds  
     │   └── MoveNextAsync(00000000-0000-0000-0000-000000000000)  Pagination-Component  MemberName@FilePath:42  12:00:00:000  0.00 milliseconds  
-    │       ├── Prefetching(00000000-0000-0000-0000-000000000000)  Pagination-Component  MemberName@FilePath:42  12:00:00:000  0.00 milliseconds  
     │       └── [05C1CFFFFFFFF8,05C1DFFFFFFFF8) move next(00000000-0000-0000-0000-000000000000)  Pagination-Component  MemberName@FilePath:42  12:00:00:000  0.00 milliseconds  
     │           └── Prefetch(00000000-0000-0000-0000-000000000000)  Pagination-Component  MemberName@FilePath:42  12:00:00:000  0.00 milliseconds  
     │               └── [05C1CFFFFFFFF8,05C1DFFFFFFFF8) move next(00000000-0000-0000-0000-000000000000)  Pagination-Component  MemberName@FilePath:42  12:00:00:000  0.00 milliseconds  
@@ -970,7 +933,6 @@
     │   │       └── Get Partition Key Ranges(00000000-0000-0000-0000-000000000000)  Routing-Component  MemberName@FilePath:42  12:00:00:000  0.00 milliseconds  
     │   │           └── Try Get Overlapping Ranges(00000000-0000-0000-0000-000000000000)  Routing-Component  MemberName@FilePath:42  12:00:00:000  0.00 milliseconds  
     │   └── MoveNextAsync(00000000-0000-0000-0000-000000000000)  Pagination-Component  MemberName@FilePath:42  12:00:00:000  0.00 milliseconds  
-    │       ├── Prefetching(00000000-0000-0000-0000-000000000000)  Pagination-Component  MemberName@FilePath:42  12:00:00:000  0.00 milliseconds  
     │       └── [,05C1CFFFFFFFF8) move next(00000000-0000-0000-0000-000000000000)  Pagination-Component  MemberName@FilePath:42  12:00:00:000  0.00 milliseconds  
     │           └── Prefetch(00000000-0000-0000-0000-000000000000)  Pagination-Component  MemberName@FilePath:42  12:00:00:000  0.00 milliseconds  
     │               └── [,05C1CFFFFFFFF8) move next(00000000-0000-0000-0000-000000000000)  Pagination-Component  MemberName@FilePath:42  12:00:00:000  0.00 milliseconds  
@@ -1001,7 +963,6 @@
         │       └── Get Partition Key Ranges(00000000-0000-0000-0000-000000000000)  Routing-Component  MemberName@FilePath:42  12:00:00:000  0.00 milliseconds  
         │           └── Try Get Overlapping Ranges(00000000-0000-0000-0000-000000000000)  Routing-Component  MemberName@FilePath:42  12:00:00:000  0.00 milliseconds  
         └── MoveNextAsync(00000000-0000-0000-0000-000000000000)  Pagination-Component  MemberName@FilePath:42  12:00:00:000  0.00 milliseconds  
-            ├── Prefetching(00000000-0000-0000-0000-000000000000)  Pagination-Component  MemberName@FilePath:42  12:00:00:000  0.00 milliseconds  
             └── [05C1E7FFFFFFFA,FF) move next(00000000-0000-0000-0000-000000000000)  Pagination-Component  MemberName@FilePath:42  12:00:00:000  0.00 milliseconds  
                 └── Prefetch(00000000-0000-0000-0000-000000000000)  Pagination-Component  MemberName@FilePath:42  12:00:00:000  0.00 milliseconds  
                     └── [05C1E7FFFFFFFA,FF) move next(00000000-0000-0000-0000-000000000000)  Pagination-Component  MemberName@FilePath:42  12:00:00:000  0.00 milliseconds  
@@ -1145,17 +1106,6 @@
           "start time": "12:00:00:000",
           "duration in milliseconds": 0,
           "children": [
-            {
-              "name": "Prefetching",
-              "id": "00000000-0000-0000-0000-000000000000",
-              "caller info": {
-                "member": "MemberName",
-                "file": "FilePath",
-                "line": 42
-              },
-              "start time": "12:00:00:000",
-              "duration in milliseconds": 0
-            },
             {
               "name": "[05C1CFFFFFFFF8,05C1DFFFFFFFF8) move next",
               "id": "00000000-0000-0000-0000-000000000000",
@@ -1408,17 +1358,6 @@
           "duration in milliseconds": 0,
           "children": [
             {
-              "name": "Prefetching",
-              "id": "00000000-0000-0000-0000-000000000000",
-              "caller info": {
-                "member": "MemberName",
-                "file": "FilePath",
-                "line": 42
-              },
-              "start time": "12:00:00:000",
-              "duration in milliseconds": 0
-            },
-            {
               "name": "[,05C1CFFFFFFFF8) move next",
               "id": "00000000-0000-0000-0000-000000000000",
               "caller info": {
@@ -1669,17 +1608,6 @@
           "start time": "12:00:00:000",
           "duration in milliseconds": 0,
           "children": [
-            {
-              "name": "Prefetching",
-              "id": "00000000-0000-0000-0000-000000000000",
-              "caller info": {
-                "member": "MemberName",
-                "file": "FilePath",
-                "line": 42
-              },
-              "start time": "12:00:00:000",
-              "duration in milliseconds": 0
-            },
             {
               "name": "[05C1E7FFFFFFFA,FF) move next",
               "id": "00000000-0000-0000-0000-000000000000",

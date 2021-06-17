@@ -135,5 +135,10 @@ namespace Microsoft.Azure.Cosmos.Tracing
         {
             this.data.Add(key, value);
         }
+
+        public void ResetDuration()
+        {
+            this.stopwatch.Restart();
+        }
     }
 }
