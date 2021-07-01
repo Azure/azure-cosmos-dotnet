@@ -265,7 +265,7 @@ namespace Microsoft.Azure.Cosmos.Tests.Query.Pipeline
 
             Console.WriteLine(traceString);
 
-            Assert.AreEqual(numTraces, rootTrace.Children.Count);
+            Assert.AreEqual(numTraces, rootTrace.Children.Count());
         }
 
         private static async Task<List<CosmosElement>> ExecuteQueryAsync(

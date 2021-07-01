@@ -11,9 +11,15 @@ namespace Microsoft.Azure.Cosmos.Tracing
 
     internal sealed class Trace : ITrace
     {
-        private readonly List<ITrace> children;
-        private readonly Dictionary<string, object> data;
-        private readonly Stopwatch stopwatch;
+        private static readonly IReadOnlyDictionary<string, object> EmptyDictionary = new Dictionary<string, object>();
+        private static readonly Stopwatch stopwatch = Stopwatch.StartNew();
+        private readonly Lazy<Dictionary<string, object>> data;
+        private readonly long startTick;
+
+        // singlechild to avoid List creation for trace objects with only 1 child
+        private List<ITrace> children;
+        private ITrace singleChild;
+        private long? endTick;
 
         private Trace(
             string name,
@@ -26,12 +32,11 @@ namespace Microsoft.Azure.Cosmos.Tracing
             this.Id = Guid.NewGuid();
             this.CallerInfo = callerInfo;
             this.StartTime = DateTime.UtcNow;
-            this.stopwatch = Stopwatch.StartNew();
             this.Level = level;
             this.Component = component;
             this.Parent = parent;
-            this.children = new List<ITrace>();
-            this.data = new Dictionary<string, object>();
+            this.data = new Lazy<Dictionary<string, object>>(() => new Dictionary<string, object>());
+            this.startTick = Trace.stopwatch.Elapsed.Ticks;
         }
 
         public string Name { get; }
@@ -42,7 +47,7 @@ namespace Microsoft.Azure.Cosmos.Tracing
 
         public DateTime StartTime { get; }
 
-        public TimeSpan Duration => this.stopwatch.Elapsed;
+        public TimeSpan Duration => new TimeSpan((this.endTick ?? Trace.stopwatch.Elapsed.Ticks) - this.startTick);
 
         public TraceLevel Level { get; }
 
@@ -50,13 +55,32 @@ namespace Microsoft.Azure.Cosmos.Tracing
 
         public ITrace Parent { get; }
 
-        public IReadOnlyList<ITrace> Children => this.children;
+        public IEnumerable<ITrace> Children  
+        {
+            get 
+            {
+                if (this.children != null)
+                {
+                    foreach (ITrace child in this.children)
+                    {
+                        yield return child;
+                    }
+                }
+                else if (this.singleChild != null)
+                {
+                    yield return this.singleChild;
+                }
+            }
+        }
 
-        public IReadOnlyDictionary<string, object> Data => this.data;
+        public IReadOnlyDictionary<string, object> Data => this.data.IsValueCreated ? this.data.Value : Trace.EmptyDictionary;
 
         public void Dispose()
         {
-            this.stopwatch.Stop();
+            if (!this.endTick.HasValue)
+            {
+                this.endTick = Trace.stopwatch.Elapsed.Ticks;
+            }
         }
 
         public ITrace StartChild(
@@ -96,9 +120,20 @@ namespace Microsoft.Azure.Cosmos.Tracing
 
         public void AddChild(ITrace child)
         {
-            lock (this.children)
+            lock (this)
             {
-                this.children.Add(child);
+                if (this.singleChild == null)
+                {
+                    this.singleChild = child;
+                }
+                else if (this.children == null)
+                {
+                    this.children = new List<ITrace> { this.singleChild, child };
+                }
+                else
+                {
+                    this.children.Add(child);
+                }
             }
         }
 
@@ -128,12 +163,12 @@ namespace Microsoft.Azure.Cosmos.Tracing
 
         public void AddDatum(string key, TraceDatum traceDatum)
         {
-            this.data.Add(key, traceDatum);
+            this.data.Value.Add(key, traceDatum);
         }
 
         public void AddDatum(string key, object value)
         {
-            this.data.Add(key, value);
+            this.data.Value.Add(key, value);
         }
     }
 }

@@ -567,7 +567,7 @@ namespace Microsoft.Azure.Cosmos.Tests.Tracing
                     }
                 }
 
-                Assert.AreEqual(numChildren, rootTrace.Children.Count);
+                Assert.AreEqual(numChildren, rootTrace.Children.Count());
                 endLineNumber = GetLineNumber();
 
                 inputs.Add(new Input("ReadFeed", rootTrace, startLineNumber, endLineNumber));
@@ -605,7 +605,7 @@ namespace Microsoft.Azure.Cosmos.Tests.Tracing
                     }
                 }
 
-                Assert.AreEqual(numChildren, rootTrace.Children.Count);
+                Assert.AreEqual(numChildren, rootTrace.Children.Count());
                 endLineNumber = GetLineNumber();
 
                 inputs.Add(new Input("ChangeFeed", rootTrace, startLineNumber, endLineNumber));
@@ -631,7 +631,7 @@ namespace Microsoft.Azure.Cosmos.Tests.Tracing
                     }
                 }
 
-                Assert.AreEqual(numChildren, rootTrace.Children.Count);
+                Assert.AreEqual(numChildren, rootTrace.Children.Count());
                 endLineNumber = GetLineNumber();
 
                 inputs.Add(new Input("Query", rootTrace, startLineNumber, endLineNumber));
@@ -914,7 +914,7 @@ namespace Microsoft.Azure.Cosmos.Tests.Tracing
 
             public ITrace Parent { get; }
 
-            public IReadOnlyList<ITrace> Children => this.children;
+            public IEnumerable<ITrace> Children => this.children;
 
             public IReadOnlyDictionary<string, object> Data => this.data;
 
