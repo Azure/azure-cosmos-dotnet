@@ -8,7 +8,10 @@ namespace CosmosBenchmark
     using System.Collections.Generic;
     using System.Linq;
     using System.Runtime;
+    using Azure.Core;
+    using Azure.Identity;
     using CommandLine;
+    using CommandLine.Text;
     using Microsoft.Azure.Cosmos;
     using Microsoft.Azure.Documents.Client;
     using Newtonsoft.Json;
@@ -26,6 +29,9 @@ namespace CosmosBenchmark
         [Option('k', Required = true, HelpText = "Cosmos account master key")]
         [JsonIgnore]
         public string Key { get; set; }
+
+        [Option(Required = false, HelpText = "Enable Azure Active Directory auth")]
+        public bool EnableAzureActiveDirectoryAuth { get; set; } = false;
 
         [Option(Required = false, HelpText = "Database to use")]
         public string Database { get; set; } = "db";
@@ -139,9 +145,15 @@ namespace CosmosBenchmark
         {
             BenchmarkConfig options = null;
             Parser parser = new Parser((settings) => settings.CaseSensitive = false);
-            parser.ParseArguments<BenchmarkConfig>(args)
-                .WithParsed<BenchmarkConfig>(e => options = e)
-                .WithNotParsed<BenchmarkConfig>(e => BenchmarkConfig.HandleParseError(e));
+            ParserResult<BenchmarkConfig> result = parser.ParseArguments<BenchmarkConfig>(args);
+
+            result.WithParsed<BenchmarkConfig>(e => options = e)
+                .WithNotParsed(errors => {
+                    HelpText helpText = HelpText.AutoBuild(result,
+                                                      h => HelpText.DefaultParsingErrorsHandler(result, h),
+                                                      e => e);
+                    Console.WriteLine(helpText);
+                });
 
             if (options.PublishResults)
             {
@@ -158,7 +170,7 @@ namespace CosmosBenchmark
             return options;
         }
 
-        internal CosmosClient CreateCosmosClient(string accountKey)
+        internal CosmosClient CreateCosmosClient(string accountKey, bool useAadAuth)
         {
             CosmosClientOptions clientOptions = new CosmosClientOptions()
             {
@@ -171,6 +183,15 @@ namespace CosmosBenchmark
             if (!string.IsNullOrWhiteSpace(this.ConsistencyLevel))
             {
                 clientOptions.ConsistencyLevel = (Microsoft.Azure.Cosmos.ConsistencyLevel)Enum.Parse(typeof(Microsoft.Azure.Cosmos.ConsistencyLevel), this.ConsistencyLevel, ignoreCase: true);
+            }
+
+
+            if (useAadAuth)
+            {
+                return new CosmosClient(
+                    this.EndPoint,
+                    new ManagedIdentityCredential(),
+                    clientOptions);
             }
 
             return new CosmosClient(
@@ -196,25 +217,12 @@ namespace CosmosBenchmark
                                 MaxRequestsPerTcpConnection = this.MaxRequestsPerTcpConnection,
                                 MaxTcpConnectionsPerEndpoint = this.MaxTcpConnectionsPerEndpoint,
                                 UserAgentSuffix = BenchmarkConfig.UserAgentSuffix,
-                                RetryOptions = new RetryOptions()
+                                RetryOptions = new Microsoft.Azure.Documents.Client.RetryOptions()
                                 {
                                     MaxRetryAttemptsOnThrottledRequests = 0
                                 }
                             },
                             desiredConsistencyLevel: consistencyLevel);
-        }
-
-        private static void HandleParseError(IEnumerable<Error> errors)
-        {
-            using (ConsoleColorContext ct = new ConsoleColorContext(ConsoleColor.Red))
-            {
-                foreach (Error e in errors)
-                {
-                    Console.WriteLine(e.ToString());
-                }
-            }
-
-            Environment.Exit(errors.Count());
         }
     }
 }
