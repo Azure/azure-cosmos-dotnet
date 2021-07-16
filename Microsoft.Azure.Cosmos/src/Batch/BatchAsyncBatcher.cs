@@ -166,24 +166,22 @@ namespace Microsoft.Azure.Cosmos
                         timeTakenInMilliseconds: stopwatch.ElapsedMilliseconds,
                         numberOfThrottles: numThrottle);
 
-                    using (PartitionKeyRangeBatchResponse batchResponse = new PartitionKeyRangeBatchResponse(serverRequest.Operations.Count, result.ServerResponse, this.serializerCore))
+                    PartitionKeyRangeBatchResponse batchResponse = new PartitionKeyRangeBatchResponse(serverRequest.Operations.Count, result.ServerResponse, this.serializerCore);
+                    foreach (ItemBatchOperation itemBatchOperation in batchResponse.Operations)
                     {
-                        foreach (ItemBatchOperation itemBatchOperation in batchResponse.Operations)
+                        TransactionalBatchOperationResult response = batchResponse[itemBatchOperation.OperationIndex];
+
+                        if (!response.IsSuccessStatusCode)
                         {
-                            TransactionalBatchOperationResult response = batchResponse[itemBatchOperation.OperationIndex];
-
-                            if (!response.IsSuccessStatusCode)
+                            ShouldRetryResult shouldRetry = await itemBatchOperation.Context.ShouldRetryAsync(response, cancellationToken);
+                            if (shouldRetry.ShouldRetry)
                             {
-                                ShouldRetryResult shouldRetry = await itemBatchOperation.Context.ShouldRetryAsync(response, cancellationToken);
-                                if (shouldRetry.ShouldRetry)
-                                {
-                                    await this.retrier(itemBatchOperation, cancellationToken);
-                                    continue;
-                                }
+                                await this.retrier(itemBatchOperation, cancellationToken);
+                                continue;
                             }
-
-                            itemBatchOperation.Context.Complete(this, response);
                         }
+
+                        itemBatchOperation.Context.Complete(this, response);
                     }
                 }
                 catch (Exception ex)
@@ -216,6 +214,9 @@ namespace Microsoft.Azure.Cosmos
             // All operations should be for the same PKRange
             string partitionKeyRangeId = this.batchOperations[0].Context.PartitionKeyRangeId;
 
+            bool isClientEncrypted = this.batchOperations[0].Context.isClientEncrypted;
+            string intendedCollectionRidValue = this.batchOperations[0].Context.intendedCollectionRidValue;
+
             ArraySegment<ItemBatchOperation> operationsArraySegment = new ArraySegment<ItemBatchOperation>(this.batchOperations.ToArray());
             return await PartitionKeyRangeServerBatchRequest.CreateAsync(
                   partitionKeyRangeId,
@@ -224,7 +225,9 @@ namespace Microsoft.Azure.Cosmos
                   this.maxBatchOperationCount,
                   ensureContinuousOperationIndexes: false,
                   serializerCore: this.serializerCore,
-                  cancellationToken: cancellationToken).ConfigureAwait(false);
+                  cancellationToken: cancellationToken,
+                  isClientEncrypted: isClientEncrypted,
+                  intendedCollectionRidValue: intendedCollectionRidValue).ConfigureAwait(false);
         }
     }
 

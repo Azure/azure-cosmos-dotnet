@@ -88,10 +88,32 @@ namespace Microsoft.Azure.Cosmos
                 trace, 
                 cancellationToken).ConfigureAwait(false);
             BatchAsyncStreamer streamer = this.GetOrAddStreamerForPartitionKeyRange(resolvedPartitionKeyRangeId);
+
             ItemBatchOperationContext context = new ItemBatchOperationContext(
                 resolvedPartitionKeyRangeId,
                 trace,
                 BatchAsyncContainerExecutor.GetRetryPolicy(this.cosmosContainer, operation.OperationType, this.retryOptions));
+
+            if (itemRequestOptions != null)
+            {
+                // get the header value if any passed by the encryption package.
+                Headers encryptionHeaders = new Headers();
+                itemRequestOptions.AddRequestHeaders?.Invoke(encryptionHeaders);
+
+                // make sure we set the Intended Collection Rid header when we have encrypted payload.
+                // This primarily would allow CosmosDB Encryption package to detect change in container referenced by a Client
+                // and prevent creating data with wrong Encryption Policy.
+                if (encryptionHeaders.TryGetValue(HttpConstants.HttpHeaders.IsClientEncrypted, out string encrypted))
+                {
+                    context.isClientEncrypted = bool.Parse(encrypted);
+
+                    if (encryptionHeaders.TryGetValue("x-ms-cosmos-intended-collection-rid", out string ridValue))
+                    {
+                        context.intendedCollectionRidValue = ridValue;
+                    }
+                }
+            }
+            
             operation.AttachContext(context);
             streamer.Add(operation);
             return await context.OperationTask;
@@ -175,9 +197,16 @@ namespace Microsoft.Azure.Cosmos
             return true;
         }
 
-        private static void AddHeadersToRequestMessage(RequestMessage requestMessage, string partitionKeyRangeId)
+        private static void AddHeadersToRequestMessage(RequestMessage requestMessage, PartitionKeyRangeServerBatchRequest partitionKeyRangeServerBatchRequest)
         {
-            requestMessage.Headers.PartitionKeyRangeId = partitionKeyRangeId;
+            requestMessage.Headers.PartitionKeyRangeId = partitionKeyRangeServerBatchRequest.PartitionKeyRangeId;
+
+            if (partitionKeyRangeServerBatchRequest.isClientEncrypted)
+            {
+                requestMessage.Headers.Add(HttpConstants.HttpHeaders.IsClientEncrypted, partitionKeyRangeServerBatchRequest.isClientEncrypted.ToString());
+                requestMessage.Headers.Add("x-ms-cosmos-intended-collection-rid", partitionKeyRangeServerBatchRequest.intendedCollectionRidValue);
+            }
+
             requestMessage.Headers.Add(HttpConstants.HttpHeaders.ShouldBatchContinueOnError, bool.TrueString);
             requestMessage.Headers.Add(HttpConstants.HttpHeaders.IsBatchAtomic, bool.FalseString);
             requestMessage.Headers.Add(HttpConstants.HttpHeaders.IsBatchRequest, bool.TrueString);
@@ -246,7 +275,7 @@ namespace Microsoft.Azure.Cosmos
                         cosmosContainerCore: this.cosmosContainer,
                         feedRange: null,
                         streamPayload: serverRequestPayload,
-                        requestEnricher: requestMessage => BatchAsyncContainerExecutor.AddHeadersToRequestMessage(requestMessage, serverRequest.PartitionKeyRangeId),
+                        requestEnricher: requestMessage => BatchAsyncContainerExecutor.AddHeadersToRequestMessage(requestMessage, serverRequest),
                         trace: trace,
                         cancellationToken: cancellationToken).ConfigureAwait(false);
 
