@@ -7,6 +7,7 @@ namespace Microsoft.Azure.Cosmos
     using System;
     using System.Collections.Concurrent;
     using System.Collections.Generic;
+    using System.Diagnostics;
     using System.Net;
     using System.Net.Http;
     using System.Text;
@@ -42,6 +43,7 @@ namespace Microsoft.Azure.Cosmos
         private readonly DiagnosticsHandlerHelper diagnosticsHelper;
 
         private readonly CancellationTokenSource cancellationTokenSource;
+        private readonly Stopwatch timer = new Stopwatch();
 
         private Task telemetryTask;
 
@@ -56,12 +58,14 @@ namespace Microsoft.Azure.Cosmos
         /// <param name="connectionMode"></param>
         /// <param name="authorizationTokenProvider"></param>
         /// <param name="diagnosticsHelper"></param>
+        /// <param name="preferredRegions"></param>
         /// <returns>ClientTelemetry</returns>
         public static ClientTelemetry CreateAndStartBackgroundTelemetry(DocumentClient documentClient,
             string userAgent,
             ConnectionMode connectionMode,
             AuthorizationTokenProvider authorizationTokenProvider,
-            DiagnosticsHandlerHelper diagnosticsHelper)
+            DiagnosticsHandlerHelper diagnosticsHelper,
+            IReadOnlyList<string> preferredRegions)
         {
             DefaultTrace.TraceInformation("Initiating telemetry with background task.");
 
@@ -69,7 +73,8 @@ namespace Microsoft.Azure.Cosmos
             userAgent,
             connectionMode,
             authorizationTokenProvider,
-            diagnosticsHelper);
+            diagnosticsHelper,
+            preferredRegions);
 
             clientTelemetry.StartObserverTask();
 
@@ -81,7 +86,8 @@ namespace Microsoft.Azure.Cosmos
             string userAgent,
             ConnectionMode connectionMode,
             AuthorizationTokenProvider authorizationTokenProvider,
-            DiagnosticsHandlerHelper diagnosticsHelper)
+            DiagnosticsHandlerHelper diagnosticsHelper,
+            IReadOnlyList<string> preferredRegions)
         {
             this.documentClient = documentClient ?? throw new ArgumentNullException(nameof(documentClient));
             this.diagnosticsHelper = diagnosticsHelper ?? throw new ArgumentNullException(nameof(diagnosticsHelper));
@@ -91,7 +97,8 @@ namespace Microsoft.Azure.Cosmos
                 clientId: Guid.NewGuid().ToString(), 
                 processId: System.Diagnostics.Process.GetCurrentProcess().ProcessName, 
                 userAgent: userAgent, 
-                connectionMode: connectionMode);
+                connectionMode: connectionMode,
+                preferredRegions: preferredRegions);
 
             this.httpClient = documentClient.httpClient;
             this.cancellationTokenSource = new CancellationTokenSource();
@@ -102,6 +109,7 @@ namespace Microsoft.Azure.Cosmos
         /// </summary>
         private void StartObserverTask()
         {
+            this.timer.Start();
             this.telemetryTask = Task.Run(this.EnrichAndSendAsync, this.cancellationTokenSource.Token);
         }
 
@@ -118,6 +126,11 @@ namespace Microsoft.Azure.Cosmos
             {
                 while (!this.cancellationTokenSource.IsCancellationRequested)
                 {
+                    if (!this.timer.IsRunning)
+                    {
+                        this.timer.Start();
+                    }
+
                     // Load account information if not available, cache is already implemented
                     if (String.IsNullOrEmpty(this.clientTelemetryInfo.GlobalDatabaseAccountName))
                     {
@@ -131,6 +144,7 @@ namespace Microsoft.Azure.Cosmos
                     Compute vmInformation = azMetadata?.Compute;
                     this.clientTelemetryInfo.ApplicationRegion = vmInformation?.Location;
                     this.clientTelemetryInfo.HostEnvInfo = ClientTelemetryOptions.GetHostInformation(vmInformation);
+                    
                     //TODO: Set AcceleratingNetwork flag from instance metadata once it is available.
 
                     await Task.Delay(observingWindow, this.cancellationTokenSource.Token);
@@ -148,8 +162,11 @@ namespace Microsoft.Azure.Cosmos
 
                     ConcurrentDictionary<OperationInfo, (LongConcurrentHistogram latency, LongConcurrentHistogram requestcharge)> operationInfoSnapshot 
                         = Interlocked.Exchange(ref this.operationInfoMap, new ConcurrentDictionary<OperationInfo, (LongConcurrentHistogram latency, LongConcurrentHistogram requestcharge)>());
-                    this.clientTelemetryInfo.OperationInfo = ClientTelemetryHelper.ToListWithMetricsInfo(operationInfoSnapshot);
+                    
+                    this.clientTelemetryInfo.TimeIntervalAggregationInSeconds = this.timer.Elapsed.TotalSeconds;
 
+                    this.clientTelemetryInfo.OperationInfo = ClientTelemetryHelper.ToListWithMetricsInfo(operationInfoSnapshot);
+                    
                     await this.SendAsync();
                 }
             }
@@ -383,6 +400,8 @@ namespace Microsoft.Azure.Cosmos
         private void Reset()
         {
             this.clientTelemetryInfo.SystemInfo.Clear();
+            // Reset the timer
+            this.timer.Reset();
         }
 
         /// <summary>
